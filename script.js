@@ -1,9 +1,22 @@
 "use strict";
 
 !(function () {
+    // Helper function to get canvas size based on viewport
+    function getCanvasSize() {
+        const vmin = Math.min(window.innerWidth, window.innerHeight);
+        const desiredSize = Math.min(vmin * 0.9, 512);
+        return Math.floor(desiredSize);
+    }
+
     function t() {
         !(function () {
             var t, g;
+
+            // Get initial canvas size
+            const canvasSize = getCanvasSize();
+            l = canvasSize;
+            s = canvasSize;
+
             if (
                 ((o = l / 2),
                 (a = s / 2),
@@ -17,7 +30,7 @@
                         height: s,
                         wireframes: !1,
                         background: "transparent",
-                        pixelRatio: 1,
+                        pixelRatio: window.devicePixelRatio || 1,
                     },
                 })),
                 (i = u.create()),
@@ -46,9 +59,10 @@
                             i = r.map(function (t) {
                                 return v.pathToVertices(t, 30);
                             }),
-                            l = y.fromVertices(
-                                256,
-                                200,
+                            terrainScale = l / 512,
+                            terrainBody = y.fromVertices(
+                                l / 2,
+                                200 * terrainScale,
                                 i,
                                 {
                                     isStatic: !0,
@@ -60,16 +74,20 @@
                                 },
                                 !0,
                             );
-                        (h.add(e, l), (o = l.position.x), (a = l.position.y));
+                        M.scale(terrainBody, terrainScale, terrainScale);
+                        h.add(e, terrainBody);
+                        o = terrainBody.position.x;
+                        a = terrainBody.position.y;
                     }));
+
                 let n = null,
                     r = null;
                 g(svg_heart).then(function (e) {
-                    n ||
-                        ((r = t(e, "path").map(function (t) {
+                    if (!n) {
+                        r = t(e, "path").map(function (t) {
                             return v.pathToVertices(t, 50);
-                        })),
-                        (n = y.fromVertices(
+                        });
+                        n = y.fromVertices(
                             o,
                             1.5 * a,
                             r,
@@ -84,39 +102,49 @@
                                 },
                             },
                             !0,
-                        )),
-                        M.scale(n, 0.2, 0.2));
+                        );
+                        M.scale(n, 0.2, 0.2);
+                    }
                 });
-                let i = function () {
+
+                let createHeart = function () {
+                    if (!n) return;
                     let t = structuredClone(n);
-                    ((t.id = f.nextId()),
-                        (t.position.x = o),
-                        (t.position.y = 1.5 * a),
-                        S.push(S.shift()));
+                    t.id = f.nextId();
+                    t.position.x = o;
+                    t.position.y = 1.5 * a;
+                    S.push(S.shift());
                     let r = S[0];
-                    ((t.render.fillStyle = r),
-                        (t.render.strokeStyle = r),
-                        t.parts.forEach(function (e, n) {
-                            ((t.parts[n].render.fillStyle = r),
-                                (t.parts[n].render.strokeStyle = r));
-                        }),
-                        M.setAngle(t, Math.round(360 * Math.random()), !1),
-                        M.setVelocity(t, {
-                            x: f.random(-5, 5),
-                            y: f.random(-5, -1),
-                        }),
-                        h.add(e, t));
+                    t.render.fillStyle = r;
+                    t.render.strokeStyle = r;
+                    t.parts.forEach(function (e, n) {
+                        t.parts[n].render.fillStyle = r;
+                        t.parts[n].render.strokeStyle = r;
+                    });
+                    M.setAngle(t, Math.round(360 * Math.random()), !1);
+                    M.setVelocity(t, {
+                        x: f.random(-5, 5),
+                        y: f.random(-5, -1),
+                    });
+                    h.add(e, t);
                 };
+
                 setTimeout(function () {
                     let t = 0,
-                        e = setInterval(() => {
-                            (i(),
-                                2 == t &&
-                                    (clearInterval(e), (n = null), (r = null)),
-                                t++);
+                        interval = setInterval(() => {
+                            createHeart();
+                            if (t == 2) {
+                                clearInterval(interval);
+                                n = null;
+                                r = null;
+                            }
+                            t++;
                         }, 780);
                 }, 220);
-            } else f.warn("Fetch is not available. Could not load SVG.");
+            } else {
+                f.warn("Fetch is not available. Could not load SVG.");
+            }
+
             let k = m.create(r.canvas),
                 x = p.create(n, {
                     mouse: k,
@@ -127,29 +155,30 @@
                         },
                     },
                 });
-            (h.add(e, x),
-                (r.mouse = k),
-                d.lookAt(r, {
-                    min: {
-                        x: 0,
-                        y: 0,
-                    },
-                    max: {
-                        x: l,
-                        y: s,
-                    },
-                }),
-                d.run(r));
+            h.add(e, x);
+            r.mouse = k;
+            d.lookAt(r, {
+                min: {
+                    x: 0,
+                    y: 0,
+                },
+                max: {
+                    x: l,
+                    y: s,
+                },
+            });
+            d.run(r);
         })();
     }
+
     let e,
         n,
         r,
         i,
         o,
         a,
-        l = Math.min(512, window.innerWidth, window.innerHeight),
-        s = Math.min(512, window.innerWidth, window.innerHeight),
+        l = 512,
+        s = 512,
         c = (Matter.World, Matter.Engine),
         d = Matter.Render,
         u = Matter.Runner,
@@ -171,53 +200,63 @@
             "orchid",
         ],
         S = ["mediumvioletred", "crimson", "salmon"];
-    ((window.onload = () => {
+
+    window.onload = () => {
         t();
-    }),
-        window.addEventListener("resize", function () {
-            const newSize = Math.min(
-                512,
-                window.innerWidth,
-                window.innerHeight,
-            );
+    };
+
+    // Handle window resize with debouncing
+    let resizeTimeout;
+    window.addEventListener("resize", function () {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(function () {
+            const newSize = getCanvasSize();
+            // Only recreate if size changed significantly
             if (Math.abs(newSize - l) > 50) {
-                l = newSize;
-                s = newSize;
-                if (r && r.canvas) {
-                    r.canvas.width = l;
-                    r.canvas.height = s;
-                    r.options.width = l;
-                    r.options.height = s;
-                    r.bounds.max.x = l;
-                    r.bounds.max.y = s;
-                }
+                location.reload();
             }
-        }),
-        setTimeout(function () {
-            let t = 0,
-                n = setInterval(() => {
-                    (!(function () {
-                        let t = f.choose(g);
-                        const n = y.circle(o, a, 25, {
-                            restitution: 0,
-                            friction: 0,
-                            frictionStatic: 0,
-                            frictionAir: 0,
-                            mass: 10,
-                            render: {
-                                fillStyle: t,
-                                strokeStyle: t,
-                                lineWidth: 0,
-                            },
-                        });
-                        (M.setVelocity(n, {
-                            x: f.random(-1, 1),
-                            y: f.random(-1, 1),
-                        }),
-                            h.add(e, n));
-                    })(),
-                        60 == t && clearInterval(n),
-                        t++);
-                }, 100);
-        }, 2e3));
+        }, 300);
+    });
+
+    // Prevent pull-to-refresh on mobile
+    document.body.addEventListener(
+        "touchmove",
+        function (e) {
+            if (e.target.tagName !== "CANVAS") {
+                e.preventDefault();
+            }
+        },
+        { passive: false },
+    );
+
+    // Create bubbles
+    setTimeout(function () {
+        let t = 0,
+            n = setInterval(() => {
+                if (e) {
+                    let color = f.choose(g);
+                    const bubble = y.circle(o, a, 25, {
+                        restitution: 0,
+                        friction: 0,
+                        frictionStatic: 0,
+                        frictionAir: 0,
+                        mass: 10,
+                        render: {
+                            fillStyle: color,
+                            strokeStyle: color,
+                            lineWidth: 0,
+                        },
+                    });
+                    M.setVelocity(bubble, {
+                        x: f.random(-1, 1),
+                        y: f.random(-1, 1),
+                    });
+                    h.add(e, bubble);
+                }
+                if (t == 60) {
+                    clearInterval(n);
+                }
+                t++;
+            }, 100);
+    }, 2000);
 })();
