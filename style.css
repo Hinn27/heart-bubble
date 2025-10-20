@@ -82,6 +82,8 @@ body {
 
 canvas {
     width: 100dvmin;
+    max-width: 512px;
+    max-height: 512px;
     aspect-ratio: 1;
     z-index: 2;
     filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.3));
@@ -183,7 +185,61 @@ canvas {
 }
 
 /* Responsive Design */
-@media (max-width: 768px) {
+/* Tablet and small desktop */
+@media (max-width: 1024px) {
+    .main-title {
+        font-size: 3rem;
+    }
+
+    .subtitle {
+        font-size: 1.1rem;
+    }
+
+    canvas {
+        width: 90dvmin;
+    }
+}
+
+/* Mobile landscape */
+@media (max-width: 768px) and (orientation: landscape) {
+    body {
+        overflow-y: auto;
+    }
+
+    .title-container {
+        position: relative;
+        top: 10px;
+        margin-bottom: 10px;
+    }
+
+    .main-title {
+        font-size: 2rem;
+    }
+
+    .subtitle {
+        font-size: 0.9rem;
+    }
+
+    .info-box {
+        position: relative;
+        bottom: auto;
+        margin-top: 10px;
+        padding: 10px 20px;
+    }
+
+    .info-box p {
+        font-size: 0.85rem;
+    }
+
+    canvas {
+        width: 70dvmin;
+        max-width: 400px;
+        max-height: 400px;
+    }
+}
+
+/* Tablet portrait */
+@media (max-width: 768px) and (orientation: portrait) {
     .main-title {
         font-size: 2.5rem;
     }
@@ -203,6 +259,99 @@ canvas {
 
     .title-container {
         top: 20px;
+    }
+
+    canvas {
+        width: 85dvmin;
+    }
+}
+
+/* Mobile */
+@media (max-width: 480px) {
+    .main-title {
+        font-size: 2rem;
+    }
+
+    .subtitle {
+        font-size: 0.9rem;
+        letter-spacing: 1px;
+    }
+
+    .title-container {
+        top: 15px;
+    }
+
+    .info-box {
+        bottom: 15px;
+        padding: 10px 20px;
+        border-radius: 30px;
+    }
+
+    .info-box p {
+        font-size: 0.8rem;
+    }
+
+    canvas {
+        width: 90dvmin;
+        border-radius: 15px;
+    }
+}
+
+/* Small mobile */
+@media (max-width: 360px) {
+    .main-title {
+        font-size: 1.8rem;
+    }
+
+    .subtitle {
+        font-size: 0.85rem;
+    }
+
+    .title-container {
+        top: 10px;
+    }
+
+    .info-box {
+        bottom: 10px;
+        padding: 8px 16px;
+    }
+
+    .info-box p {
+        font-size: 0.75rem;
+    }
+
+    canvas {
+        width: 95dvmin;
+        border-radius: 12px;
+    }
+}
+
+/* Very short screens */
+@media (max-height: 600px) {
+    .title-container {
+        top: 10px;
+    }
+
+    .main-title {
+        font-size: 2rem;
+    }
+
+    .subtitle {
+        font-size: 0.9rem;
+        margin-top: 5px;
+    }
+
+    .info-box {
+        bottom: 10px;
+        padding: 8px 16px;
+    }
+
+    .info-box p {
+        font-size: 0.8rem;
+    }
+
+    canvas {
+        width: 70dvmin;
     }
 }
 
